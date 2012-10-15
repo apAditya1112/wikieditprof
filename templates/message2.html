@@ -1,0 +1,8 @@
+{% extends "layout2.html" %}
+{% block content %}
+    <h1>{{ username }} said:</h1>
+    <p>
+        {{ message }}
+    </p>
+    <a href="{{ url_for('index') }}">Say something else</a>
+{% endblock %}
