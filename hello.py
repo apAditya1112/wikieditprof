@@ -11,7 +11,7 @@ opener.addheaders=[('User-agent', 'Mozilla/5.0')]
 app = flask.Flask(__name__)
 app.secret_key = "bacon"
 
-users = {'miles':'bacon'}
+users = {'miles':'bacon','chuck':'radio','sunah':'toast'}
 
 class Main(flask.views.MethodView):
     def get(self):
