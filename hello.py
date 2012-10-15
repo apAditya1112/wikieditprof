@@ -135,21 +135,21 @@ def recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output):
             totalmatches += 1
         if len(currentline)==0 and matchesonpage<499:
 ##            output += "matches on final page: "+str(matchesonpage)+"\n"
-            output += "A total of "+str(totalmatches)+" edits have been made to this page.\n"
+##            output += "A total of "+str(totalmatches)+" edits have been made to this page.\n"
             return dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
             break
         if len(currentline)==0:
 ##            output += "matches found on this page: "+str(matchesonpage)+"\n"
 ##            output += "matches found so far: "+str(totalmatches)+"\n"
             if matchesonpage>=499:
-                output += "going to the next page\n"
+##                output += "going to the next page\n"
                 return recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
                 break
             
 def dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output):
     sortdict = (sorted(matchdict.iteritems(), key=operator.itemgetter(1), reverse=True))
 ##    print sortdict
-    output+="A total of "+str(totalmatches)+" have been made to this page\n"
+    output+="A total of "+str(totalmatches)+" edits have been made to this page\n"
     maxeditday = max(matchdict.iteritems(), key=operator.itemgetter(1))[0]
     output += "The highest number of edits ("+ str(matchdict[maxeditday]) + ") to the "+wikiurl+" page occurred on " + str(maxeditday) + " (dd/mm/yyyy).\n"
     timeTotal=datetime.now()-startTime
