@@ -4,11 +4,11 @@
     Enter a wikiurl to profile:<br />
     <br />
     <i>(A wikiurl is the unique portion of a wikipedia URL: everything that appears after "http://en.wikipedia.org/wiki/" e.g. John_Quincy_Adams. If your wikiurl contains any punctuation, or other funny business, your browser may automatically clean that up for you. <br />
-    <img src="/content/wpunc.png" alt="url with punctuation">
+    <img src="../content/wpunc.png" alt="url with punctuation">
     <br />
 
      In this case, I recommend clicking on "Edit" and then copying everything in between "http://en.wikipedia.org/w/index.php?title=" and "&action=edit"</i>
-         <img src="/content/wopunc.png" alt="url without punctuation">
+         <img src="../content/wopunc.png" alt="url without punctuation">
     <br />
     <form action="{{url_for('remote')}}" method="post">
         <input type="text" name="expression" />
