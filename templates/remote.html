@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block body %}
     <h2>Remote Control</h2>
-    Enter a wikiurl to profile:
+    Enter a wikiurl to profile:<br />
+    <i>(A wikiurl is the unique portion of a wikipedia page: everything that appears after "http://en.wikipedia.org/wiki/" e.g. "John_Quincy_Adams" or "Jimmy_John%27s"). Note that if your url contains punctuation, you will need to get the unicode approximation of that punctuation. This can obtained from clicking view history, and copying this part: http://en.wikipedia.org/w/index.php?title=***wikiurl***&action=edit</i>
     <form action="{{url_for('remote')}}" method="post">
         <input type="text" name="expression" />
         <input type="submit" value="Execute" />
