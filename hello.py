@@ -69,6 +69,7 @@ def prepare(wikiurl):
 # 	wikiurlmod=wikiurl.replace("'","%27")
     startTime=datetime.now()
     offset=""
+    fakevariable=0
     matchlist=""
     matchdict={}
     totalmatches=0
