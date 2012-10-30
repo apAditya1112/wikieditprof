@@ -65,6 +65,9 @@ app.add_url_rule('/remote/',
                  methods=['GET', 'POST'])
 
 def prepare(wikiurl):
+	wikiurl=wikiurl.replace("'","%27")
+	wikiurl=wikiurl.replace("&","%26")
+	wikiurl=wikiurl.replace("%","%25")
     startTime=datetime.now()
     offset=""
     matchlist=""
@@ -142,6 +145,7 @@ def recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output):
 ##            output += "matches found on this page: "+str(matchesonpage)+"\n"
 ##            output += "matches found so far: "+str(totalmatches)+"\n"
             if matchesonpage>=499:
+            	flask.flash("going to the next page\n")
 ##                output += "going to the next page\n"
                 return recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
                 break
