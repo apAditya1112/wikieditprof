@@ -1,17 +1,23 @@
 {% extends "base.html" %}
 {% block body %}
     <h2>Wikipedia Edit Profiler</h2>
-    Enter a wikiurl to profile:<br />
+    Enter a wikiurl to profile:
     <br />
-    <i>A wikiurl is the unique portion of a wikipedia URL: everything that appears after "http://en.wikipedia.org/wiki/" e.g. Sonic_Youth. If your wikiurl contains any punctuation, or other funny business, your browser may automatically clean that up for you. <br />
+    <br />
+    <i>A wikiurl is the unique portion of a wikipedia URL: everything that appears after "http://en.wikipedia.org/wiki/" e.g. Sonic_Youth. If your wikiurl contains any punctuation, or other funny business, your browser may automatically clean that up for you. 
+    <br />
+    <br />
     <img src="http://i.imgur.com/GWSYR.png" alt="" title="with punctuation" />
     <br />
-
+	<br />
      In this case, I recommend clicking on "Edit" and then copying everything in between "http://en.wikipedia.org/w/index.php?title=" and "&action=edit"</i>
+     <br />
      <br />
 <img src="http://i.imgur.com/DQNgd.png" title="without punctuation" alt="" />
     <br />
+    <br />
     <i>Heroku has a 30 second request timeout, so pages with a large number of edits which take over 30 seconds to process will currently timeout. I am working on a fix.
+    <br />
     <br />
     <form action="{{url_for('remote')}}" method="post">
         <input type="text" name="expression" />
