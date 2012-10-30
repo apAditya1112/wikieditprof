@@ -15,7 +15,7 @@ users = {'miles':'bacon','chuck':'radio','sunah':'toast','cate':'hutch','sarah':
 
 class Main(flask.views.MethodView):
     def get(self):
-        return flask.render_template('index.html')
+        return flask.render_template('remote.html')
     
 #     def post(self):
 #         if 'logout' in flask.request.form:
