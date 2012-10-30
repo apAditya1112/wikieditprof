@@ -66,10 +66,9 @@ app.add_url_rule('/remote/',
 
 def prepare(wikiurl):
 ## swap out punctuation
-# 	wikiurlmod=wikiurl.replace("'","%27")
+ 	wikiurlmod=wikiurl.replace("'","%27")
     startTime=datetime.now()
     offset=""
-    fakevariable=0
     matchlist=""
     matchdict={}
     totalmatches=0
