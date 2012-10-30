@@ -65,9 +65,6 @@ app.add_url_rule('/remote/',
                  methods=['GET', 'POST'])
 
 def prepare(wikiurl):
-	wikiurl=wikiurl.replace("'","%27")
-	wikiurl=wikiurl.replace("&","%26")
-	wikiurl=wikiurl.replace("%","%25")
     startTime=datetime.now()
     offset=""
     matchlist=""
