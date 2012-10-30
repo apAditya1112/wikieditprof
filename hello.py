@@ -145,7 +145,6 @@ def recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output):
 ##            output += "matches found on this page: "+str(matchesonpage)+"\n"
 ##            output += "matches found so far: "+str(totalmatches)+"\n"
             if matchesonpage>=499:
-            	flask.flash("going to the next page\n")
 ##                output += "going to the next page\n"
                 return recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
                 break
