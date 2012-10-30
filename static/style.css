@@ -13,3 +13,7 @@ body{
 #content {
     margin-left: 10em;
 }
+
+html{
+	background-color: rgba(100,100,100,1);
+}
