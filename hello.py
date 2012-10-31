@@ -65,15 +65,16 @@ app.add_url_rule('/remote/',
                  methods=['GET', 'POST'])
 
 def prepare(wikiurl):
-## swap out punctuation
-# 	wikiurlmod=wikiurl.replace("'","%27")
-    startTime=datetime.now()
-    offset=""
-    matchlist=""
-    matchdict={}
-    totalmatches=0
-    output="Profiling the "+wikiurl+" page...\n"
-    return scrapewiki(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
+	wikiurl=wikiurl.replace("'","%27")
+	wikiurl=wikiurl.replace("&","%26")
+	wikiurl=wikiurl.replace("%","%25")
+	startTime=datetime.now()
+	offset=""
+	matchlist=""
+	matchdict={}
+	totalmatches=0
+	output="Profiling the "+wikiurl+" page...\n"
+	return scrapewiki(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
 
 def scrapewiki(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output):
     matchesonpage=0
