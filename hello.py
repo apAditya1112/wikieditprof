@@ -157,6 +157,7 @@ def dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output
     output += "The highest number of edits ("+ str(matchdict[maxeditday]) + ") to the "+wikiurl+" page occurred on " + str(maxeditday) + " (dd/mm/yyyy).\n"
     timeTotal=datetime.now()-startTime
     output += "This code took "+str(timeTotal)+" seconds to execute\n"
+    output += sortdict
     return output
     
 ##    return
@@ -170,9 +171,6 @@ def dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output
 ##    outcsv=open(wikiurl+".csv",'w')
 ##    outcsv.write(matchlist)
 ##    outcsv.close()
-
-##prepare("Heath_Ledger")
-##prepare("Jimmy_John%27s")
 
 port = int(os.environ.get('PORT', 5000))
 app.debug = True
