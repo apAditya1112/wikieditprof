@@ -11,11 +11,12 @@ opener.addheaders=[('User-agent', 'Mozilla/5.0')]
 app = flask.Flask(__name__)
 app.secret_key = "bacon"
 
-import requests
-from rq import Queue
-from worker import conn
+#redis/background job stuff commented out for now
+#import requests
+#from rq import Queue
+#from worker import conn
 
-q = Queue(connection=conn)
+#q = Queue(connection=conn)
 
 #users = {'miles':'bacon','chuck':'radio','sunah':'toast','cate':'hutch','sarah':'chair'}
 
