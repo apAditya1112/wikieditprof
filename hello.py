@@ -11,6 +11,12 @@ opener.addheaders=[('User-agent', 'Mozilla/5.0')]
 app = flask.Flask(__name__)
 app.secret_key = "bacon"
 
+import requests
+from rq import Queue
+from worker import conn
+
+q = Queue(connection=conn)
+
 #users = {'miles':'bacon','chuck':'radio','sunah':'toast','cate':'hutch','sarah':'chair'}
 
 class Main(flask.views.MethodView):
@@ -52,6 +58,7 @@ class Remote(flask.views.MethodView):
 #     @login_required
     def post(self):
         input = flask.request.form['expression']
+##        result = q.enqueue(prepare, input)
         result = prepare(input)
 ##        result = eval(flask.request.form['expression'])      
         flask.flash(result)
@@ -65,16 +72,17 @@ app.add_url_rule('/remote/',
                  methods=['GET', 'POST'])
 
 def prepare(wikiurl):
-	wikiurl=wikiurl.replace("%","%25")
-	wikiurl=wikiurl.replace("'","%27")
-	wikiurl=wikiurl.replace("&","%26")
-	startTime=datetime.now()
-	offset=""
-	matchlist=""
-	matchdict={}
-	totalmatches=0
-	output="Profiling the "+wikiurl+" page...\n"
-	return scrapewiki(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
+##    resp = requests.get(wikiurl)
+    wikiurl=wikiurl.replace("%","%25")
+    wikiurl=wikiurl.replace("'","%27")
+    wikiurl=wikiurl.replace("&","%26")
+    startTime=datetime.now()
+    offset=""
+    matchlist=""
+    matchdict={}
+    totalmatches=0
+    output="Profiling the "+wikiurl+" page...\n"
+    return scrapewiki(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
 
 def scrapewiki(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output):
     matchesonpage=0
