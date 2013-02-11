@@ -13,3 +13,8 @@ body{
 #content {
     margin-left: 10em;
 }
+
+#flash {
+	font-family: 'Georgia', serif;
+    color:#3E4349;
+}
