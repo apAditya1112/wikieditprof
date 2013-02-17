@@ -165,7 +165,7 @@ def dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output
     maxeditday = max(matchdict.iteritems(), key=operator.itemgetter(1))[0]
     output += "The highest number of edits ("+ str(matchdict[maxeditday]) + ") to the "+wikiurl+" page occurred on " + str(maxeditday) + " (dd/mm/yyyy).\n"
     timeTotal=datetime.now()-startTime
-    output += "This <a href='http://google.com'>code</a> took "+str(timeTotal)+" seconds to execute\n"
+    output += 'This <a href="http://google.com">code</a> took '+str(timeTotal)+" seconds to execute\n"
     return output
     
 ##    return
