@@ -166,7 +166,7 @@ def dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output
     output += "The highest number of edits ("+ str(matchdict[maxeditday]) + ") to the "+wikiurl+" page occurred on " + str(maxeditday) + " (dd/mm/yyyy).\n"
     timeTotal=datetime.now()-startTime
     output += 'This <a href="http://google.com">code</a> took '+str(timeTotal)+" seconds to execute\n"
-    return Markup(output)
+    return flask.Markup(output)
     
 ##    return
 ####not ideal:
