@@ -19,7 +19,7 @@
     {% endif %}
     {% with messages = get_flashed_messages() %}
         {% for message in messages %}
-            {{message}}
+            {{message|safe}}
         {% endfor %}
     {% endwith %}
 {% endblock %}
