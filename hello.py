@@ -18,7 +18,7 @@ app.secret_key = "bacon"
 
 #q = Queue(connection=conn)
 
-#users = {'miles':'bacon','chuck':'radio','sunah':'toast','cate':'hutch','sarah':'chair'}
+#users = {'user':'pass'}
 
 class Main(flask.views.MethodView):
     def get(self):
@@ -81,11 +81,12 @@ def prepare(wikiurl):
     offset=""
     matchlist=""
     matchdict={}
+    monthdict={}
     totalmatches=0
     output="Profiling the "+wikiurl+" page...\n"
-    return scrapewiki(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
+    return scrapewiki(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output,monthdict)
 
-def scrapewiki(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output):
+def scrapewiki(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output,monthdict):
     matchesonpage=0
     url="http://en.wikipedia.org/w/index.php?title="+wikiurl+"&offset="+offset+"&limit=500&action=history"
     page=opener.open(url)
@@ -108,18 +109,22 @@ def scrapewiki(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
                 matchdict[ddmmyyyy]+=1
             else:
                 matchdict[ddmmyyyy]=1
+            if str(ddmmyyyy)[3:] in monthdict:
+                monthdict[str(ddmmyyyy)[3:]]+=1
+            else:
+                monthdict[str(ddmmyyyy)[3:]]=1
             matchlist += time + "\t" + day + "\t" + month + "\t" + year + "\n"
             totalmatches += 1
         if len(currentline)==0:
 ##            output += "matches found on first page: "+str(matchesonpage)+"\n"
             if matchesonpage>=499 and offset!="":
-                return recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
+                return recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output,monthdict)
                 break
             else:
-                return dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
+                return dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output,monthdict)
                 break
 
-def recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output):
+def recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output,monthdict):
     url="http://en.wikipedia.org/w/index.php?title="+wikiurl+"&offset="+offset+"&limit=500&action=history"
     page=opener.open(url)
     matchesonpage=0
@@ -143,22 +148,26 @@ def recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output):
                 matchdict[ddmmyyyy]+=1
             else:
                 matchdict[ddmmyyyy]=1
+            if str(ddmmyyyy)[3:] in monthdict:
+                monthdict[str(ddmmyyyy)[3:]]+=1
+            else:
+                monthdict[str(ddmmyyyy)[3:]]=1
             matchlist += time + "\t" + day + "\t" + month + "\t" + year + "\n"
             totalmatches += 1
         if len(currentline)==0 and matchesonpage<499:
 ##            output += "matches on final page: "+str(matchesonpage)+"\n"
 ##            output += "A total of "+str(totalmatches)+" edits have been made to this page.\n"
-            return dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
+            return dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output,monthdict)
             break
         if len(currentline)==0:
 ##            output += "matches found on this page: "+str(matchesonpage)+"\n"
 ##            output += "matches found so far: "+str(totalmatches)+"\n"
             if matchesonpage>=499:
 ##                output += "going to the next page\n"
-                return recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output)
+                return recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output,monthdict)
                 break
             
-def dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output):
+def dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output,monthdict):
     sortdict = (sorted(matchdict.iteritems(), key=operator.itemgetter(1), reverse=True))
 ##    print sortdict
     output+="A total of "+str(totalmatches)+" edits have been made to this page\n"
@@ -166,6 +175,12 @@ def dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output
     output += "The highest number of edits ("+ str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/'+wikiurl+'">'+wikiurl+"</a> page occurred on " + str(maxeditday) + " (dd/mm/yyyy).\n"
     timeTotal=datetime.now()-startTime
     output += 'This code took '+str(timeTotal)+" seconds to execute\n"
+#    dictout = ""
+#    for key, value in monthdict.items():
+#        dictout += str(key), str(value)
+#    output += dictout
+    stringdict = str(monthdict)
+    output += re.sub("{|}","",stringdict)
     return flask.Markup(output)
     
 ##    return
