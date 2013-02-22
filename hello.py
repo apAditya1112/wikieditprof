@@ -179,8 +179,9 @@ def dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output
 #    for key, value in monthdict.items():
 #        dictout += str(key), str(value)
 #    output += dictout
-    stringdict = str(monthdict)
-    output += re.sub("{|}","",stringdict)
+# this is messing up output:
+#    stringdict = str(monthdict)
+#    output += re.sub("{|}","",stringdict)
     return flask.Markup(output)
     
 ##    return
