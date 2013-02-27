@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+% block body %}
+    <h2>Wikipedia Edit Profiler</h2>
+    Enter a wikiurl to profile:
+    <br />
+    <br />
+    <i>A wikiurl is the unique portion of a wikipedia URL: everything that appears after "http://en.wikipedia.org/wiki/" e.g. Sonic_Youth. 
+    <br />
+    <br />
+    <img src="http://i.imgur.com/sVq4b.png" alt="" title="wikipedia url with portion of interest highlighted" />
+    <br />
+    <br />
+    <i>Pages with large numbers of edits that take over 30 seconds to process will currently timeout. I am working on a fix. If you know how to implement background workers in Flask, get in touch.</i>
+    <br />
+    <br />
+    <form action="{{url_for('remote')}}" method="post">
+        <input type="text" name="expression" />
+        <input type="submit" value="Execute" />
+    </form>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            Results:
+            <pre>
+            <div id="flash">
+                {% for message in messages %}
+{{ message }}
+                {% endfor %}
+            </div>
+            </pre>
+        {% endif %}
+    {% endwith %}
+{% endblock %}
