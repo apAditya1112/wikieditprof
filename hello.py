@@ -74,15 +74,15 @@ app.add_url_rule('/remote/',
 
 def prepare(wikiurl):
 ##    resp = requests.get(wikiurl)
-    wikiurl=wikiurl.replace("%","%25")
-    wikiurl=wikiurl.replace("'","%27")
-    wikiurl=wikiurl.replace("&","%26")
-    startTime=datetime.now()
-    offset=""
-    matchlist=""
-    matchdict={}
-    monthdict={}
-    totalmatches=0
+    wikiurl = wikiurl.replace("%","%25")
+    wikiurl = wikiurl.replace("'","%27")
+    wikiurl = wikiurl.replace("&","%26")
+    startTime = datetime.now()
+    offset = ""
+    matchlist = ""
+    matchdict = {}
+    monthdict = {}
+    totalmatches = 0
     output="Profiling the "+wikiurl+" page...\n"
     return scrapewiki(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output,monthdict)
 
@@ -177,45 +177,35 @@ def dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output
     timeTotal=datetime.now()-startTime
 
 # this turns monthdict into yeardict so we can make nice horizontal tables
-#    yeardict = {}
-#    for key in monthdict:
-#        try:
-#            dyear, dmonth = map(int, key.split('-'))
-#        except Exception:
-#            continue
-#        if dyear not in yeardict:
-#            yeardict[dyear] = [0]*12
-#        yeardict[dyear][dmonth-1] = monthdict[key]
+    yeardict = {}
+    for key in monthdict:
+        try:
+            dyear, dmonth = map(int, key.split('-'))
+        except Exception:
+            continue
+        if dmonth not in range(1,13):
+            break
+        if dyear not in yeardict:
+            yeardict[dyear] = [0]*12
+        yeardict[dyear][dmonth-1] = monthdict[key]
 
     output += 'This code took '+str(timeTotal)+" seconds to execute\n"
     color = max(monthdict.iteritems(),key=operator.itemgetter(1))[0]
     color = monthdict[color]
     maxeditmonth = color
-    color = 255/color
+    color = 255/float(color)
 # turns yeardict into an html table with colors based on activity
-    htmltable = '<table border="1">'    
-#    for key in yeardict:
-#        htmltable += '<tr><td>'+str(key)+'</td>'
-#        for i in range(0,12):
-#            htmltable += '<td style="background-color:rgba(%i,%i,0,1);">%s</td>' % (yeardict[key][i]*color, (maxeditmonth-yeardict[key][i])*color , str(yeardict[key][i]))
-#        htmltable += '</tr>'
-#    htmltable += "</table>"
+    htmltable = '<table border="1"><tr><td></td><td>Jan</td><td>Feb</td><td>Mar</td><td>Apr</td><td>May</td><td>Jun</td><td>Jul</td><td>Aug</td><td>Sep</td><td>Oct</td><td>Nov</td><td>Dec</td></tr>'    
+    for key in yeardict:
+        htmltable += '<tr><td>'+str(key)+'</td>'
+        for i in range(0,12):
+            htmltable += '<td style="background-color:rgba(%i,%i,0,1);">%s</td>' % (yeardict[key][i]*color, (maxeditmonth-yeardict[key][i])*color , str(yeardict[key][i]))
+        htmltable += '</tr>'
+    htmltable += "</table>"
 
-#    output += htmltable
+    output += htmltable
     return flask.Markup(output)
     
-##    return
-####not ideal:
-##    sys.exit()
-##    outfile=open(wikiurl+".html",'w')
-##    outfile.write("testing")
-##    outfile.close()
-##    webbrowser.open(wikiurl+".html")
-####only writes first 500 lines--variables not passing correctly
-##    outcsv=open(wikiurl+".csv",'w')
-##    outcsv.write(matchlist)
-##    outcsv.close()
-
 port = int(os.environ.get('PORT', 5000))
 app.debug = True
 app.run(host='0.0.0.0', port=port)
