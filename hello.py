@@ -8,8 +8,8 @@ import operator
 import webbrowser
 import sys
 from datetime import datetime
-#from bs4 import BeautifulSoup
-from beautifulsoup4 import BeautifulSoup
+from bs4 import BeautifulSoup
+#from beautifulsoup4 import BeautifulSoup
 opener = urllib2.build_opener()
 opener.addheaders = [('User-agent', 'Mozilla/5.0')]
 app = flask.Flask(__name__)
