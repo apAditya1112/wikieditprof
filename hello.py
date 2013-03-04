@@ -8,6 +8,7 @@ import operator
 import webbrowser
 import sys
 from datetime import datetime
+from bs4 import BeautifulSoup
 opener = urllib2.build_opener()
 opener.addheaders = [('User-agent', 'Mozilla/5.0')]
 app = flask.Flask(__name__)
@@ -77,7 +78,6 @@ app.add_url_rule('/remote/',
 
 def prepare(wikiurl):
 ##    resp = requests.get(wikiurl)
-    sys.stdout.write("***prepare***\n")
     sys.stdout.flush()
     wikiurl = wikiurl.replace("%", "%25")
     wikiurl = wikiurl.replace("'", "%27")
@@ -88,104 +88,69 @@ def prepare(wikiurl):
     matchdict = {}
     monthdict = {}
     totalmatches = 0
-    output = "Profiling the "+wikiurl+" page...\n"
-    return scrapewiki(wikiurl, offset, matchlist, matchdict, totalmatches, startTime, output, monthdict)
+    return scrapewiki(wikiurl, offset, matchlist, matchdict, totalmatches, startTime, monthdict)
 
-def scrapewiki(wikiurl, offset, matchlist, matchdict, totalmatches, startTime, output, monthdict):
+def scrapewiki(wikiurl, offset, matchlist, matchdict, totalmatches, startTime, monthdict):
     sys.stdout.write("***scrapewiki***\n")
     sys.stdout.flush()
     matchesonpage = 0
     url = "http://en.wikipedia.org/w/index.php?title="+wikiurl+"&offset="+offset+"&limit=500&action=history"
     page = opener.open(url)
-    while True:
-        currentline = page.readline()
-        if re.search(wikiurl+'\&amp;offset=(\d{14})', currentline):
-            offset = re.search(wikiurl+'\&amp;offset=(\d{14})', currentline).group(1)
-        if re.search(r'mw-changeslist-date">(\d{2}:\d{2}),\s{1}(\d{1,2})\s{1}(\w{3,10})\s{1}(\d{4})', currentline):
-            matchesonpage += 1
-            edittimestamp = re.search(r'mw-changeslist-date">(\d{2}:\d{2}),\s{1}(\d{1,2})\s{1}(\w{3,10})\s{1}(\d{4})', currentline)
-            time = edittimestamp.group(1)
-            day = edittimestamp.group(2)
-            month = edittimestamp.group(3)
-            monthlist = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-            if month in monthlist:
-                month = "%02d" % (monthlist.index(month)+1)
-            year = edittimestamp.group(4)
-            if len(str(month)) > 2:
-                sys.stdout.write("***month is fucked***\n")
-            if len(str(year)) < 4:
-                sys.stdout.write("***year is effed***\n")
-            ddmmyyyy = str(day+"-"+month+"-"+year)
-            yyyymm = str(year+"-"+month)
-            sys.stdout.write(yyyymm+"\n")
-            if ddmmyyyy in matchdict:
-                matchdict[ddmmyyyy] += 1
-            else:
-                matchdict[ddmmyyyy] = 1
-            if yyyymm in monthdict:
-                monthdict[yyyymm] += 1
-            else:
-                monthdict[yyyymm] = 1
-            matchlist += time + "\t" + day + "\t" + month + "\t" + year + "\n"
-            totalmatches += 1
-        if len(currentline) == 0:
-##            output += "matches found on first page: "+str(matchesonpage)+"\n"
-            if matchesonpage >= 499 and offset != "":
-                return recursion(wikiurl, offset, matchlist, matchdict, totalmatches, startTime, output, monthdict)
-                break
-            else:
-                return dumpresults(wikiurl, offset, matchlist, matchdict, totalmatches, startTime, output, monthdict)
-                break
+    offset = ""
 
-def recursion(wikiurl, offset, matchlist, matchdict, totalmatches, startTime, output, monthdict):
-    sys.stdout.write("***recursion***\n")
-    sys.stdout.flush()
-    url = "http://en.wikipedia.org/w/index.php?title="+wikiurl+"&offset="+offset+"&limit=500&action=history"
-    page = opener.open(url)
-    matchesonpage = 0
-    while True:
-        currentline = page.readline()
-        if re.search(wikiurl+'\&amp;offset=(\d{14})', currentline):
-            if re.search(wikiurl+'\&amp;offset=(\d{14})', currentline).group(1) < offset:
-                offset = re.search(wikiurl+'\&amp;offset=(\d{14})', currentline).group(1)
-        if re.search(r'mw-changeslist-date">(\d{2}:\d{2}),\s{1}(\d{1,2})\s{1}(\w{3,10})\s{1}(\d{4})', currentline):
-            matchesonpage += 1
-            edittimestamp = re.search(r'mw-changeslist-date">(\d{2}:\d{2}),\s{1}(\d{1,2})\s{1}(\w{3,10})\s{1}(\d{4})', currentline)
-            time = edittimestamp.group(1)
-            day = edittimestamp.group(2)
-            month = edittimestamp.group(3)
-            monthlist=["January","February","March","April","May","June","July","August","September","October","November","December"]
-            if month in monthlist:
-                month = "%02d" % (monthlist.index(month)+1)
-            year = edittimestamp.group(4)
-            ddmmyyyy = str(day+"-"+month+"-"+year)
-            if ddmmyyyy in matchdict:
-                matchdict[ddmmyyyy]+=1
-            else:
-                matchdict[ddmmyyyy]=1
-            if str(ddmmyyyy)[3:] in monthdict:
-                monthdict[str(ddmmyyyy)[3:]]+=1
-            else:
-                monthdict[str(ddmmyyyy)[3:]]=1
-            matchlist += time + "\t" + day + "\t" + month + "\t" + year + "\n"
-            totalmatches += 1
-        if len(currentline)==0 and matchesonpage<499:
-            return dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output,monthdict)
-            break
-        if len(currentline)==0:
-            if matchesonpage>=499:
-                return recursion(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output,monthdict)
-                break
-            
-def dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output,monthdict):
+    soup = BeautifulSoup(opener.open(url))
+# populate monthdict and matchdict... maybe it would make sense to make monthdict all at once later on, or go directly from matchdict to html table...
+    for link in soup.find_all("a", class_="mw-changeslist-date"):
+        totalmatches += 1
+        stime, sday, smonth, syear = map(str, link.string.split(' '))
+        monthlist=["January","February","March","April","May","June","July","August","September","October","November","December"]
+        if smonth in monthlist:
+            smonth = "%02d" % (monthlist.index(smonth)+1)
+        yyyymmdd = str(syear+"-"+smonth+"-"+sday)
+        yyyymm2 = str(syear+"-"+smonth)
+        if yyyymmdd in matchdict:
+            matchdict[yyyymmdd] += 1
+        else:
+            matchdict[yyyymmdd] = 1
+        if yyyymm2 in monthdict:
+            monthdict[yyyymm2] += 1
+        else:
+            monthdict[yyyymm2] = 1
+#find offset
+    for link in soup.find_all("a", class_="mw-nextlink"):
+        offset = link.get('href')
+        offset = re.search('offset=(\d{14})', offset).group(1)        
+        sys.stdout.write("offset: "+offset+"\n")
+#determine if we need to go to next page
+    if offset != "":
+        sys.stdout.write("***recursion***\n")
+        return scrapewiki(wikiurl, offset, matchlist, matchdict, totalmatches, startTime, monthdict)
+    else:
+        return dumpresults(wikiurl, matchlist, matchdict, totalmatches, startTime, monthdict)
+
+def dumpresults(wikiurl, matchlist, matchdict, totalmatches, startTime, monthdict):
     sortdict = (sorted(matchdict.iteritems(), key=operator.itemgetter(1), reverse=True))
-    output+="A total of "+str(totalmatches)+" edits have been made to this page\n"
-    maxeditday = max(matchdict.iteritems(), key=operator.itemgetter(1))[0]
-    output += "The highest number of edits ("+ str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/'+wikiurl+'">'+wikiurl+"</a> page occurred on " + str(maxeditday) + " (dd/mm/yyyy).\n"
-    timeTotal=datetime.now()-startTime
+    maxeditday = max(matchdict.iteritems(), key = operator.itemgetter(1))[0]
+    timeTotal = datetime.now()-startTime
+    output = "Profiling the "+wikiurl+" page...\nA total of "+str(totalmatches)+" edits have been made to this page\nThe highest number of edits ("+ str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/'+wikiurl+'">'+wikiurl+"</a> page occurred on " + str(maxeditday) + " (dd/mm/yyyy).\n"
+
+    testmonthdict = {}
+#maybe build monthdict here so we don't have to pass it around through recursion:
+    for key in matchdict:
+        myear, mmonth, mday = map(int, key.split('-'))
+        newkey = str(myear)+"-"+str(mmonth)
+        if newkey in testmonthdict:
+            testmonthdict[newkey] += 1
+        else:
+            testmonthdict[newkey] = 1
+
+    sys.stdout.write("1: "+str(testmonthdict)+"\n")
+    sys.stdout.write("2: "+str(monthdict)+"\n")
 
 # this turns monthdict into yeardict so we can make nice horizontal tables
     yeardict = {}
+
+#    sys.stdout.write("monthdict: "+str(monthdict)+"\n")
     for key in monthdict:
         try:
             dyear, dmonth = map(int, key.split('-'))
@@ -212,8 +177,8 @@ def dumpresults(wikiurl,offset,matchlist,matchdict,totalmatches,startTime,output
     htmltable += "</table>"
 
     output += htmltable
-    sys.stdout.write("Output is: " + output+"\n")
-    sys.stdout.write(str(monthdict)+"\n")
+#    sys.stdout.write("Output is: " + output+"\n")
+    sys.stdout.write(str(matchdict)+"\n")
     sys.stdout.flush()
     return flask.Markup(output)
     
