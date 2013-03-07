@@ -9,7 +9,7 @@ import webbrowser
 import sys
 from datetime import datetime
 from bs4 import BeautifulSoup
-#from beautifulsoup4 import BeautifulSoup
+
 opener = urllib2.build_opener()
 opener.addheaders = [('User-agent', 'Mozilla/5.0')]
 app = flask.Flask(__name__)
@@ -77,9 +77,10 @@ app.add_url_rule('/remote/',
                  view_func=Remote.as_view('remote'),
                  methods=['GET', 'POST'])
 
-def prepare(wikiurl):
+def prepare(wikiid):
 ##    resp = requests.get(wikiurl)
-    sys.stdout.flush()
+    global wikiurl
+    wikiurl = wikiid
     wikiurl = wikiurl.replace("%", "%25")
     wikiurl = wikiurl.replace("'", "%27")
     wikiurl = wikiurl.replace("&", "%26")
@@ -87,15 +88,13 @@ def prepare(wikiurl):
     offset = ""
     matchlist = ""
     matchdict = {}
-    monthdict = {}
     totalmatches = 0
-    return scrapewiki(wikiurl, offset, matchlist, matchdict, totalmatches, startTime, monthdict)
+    return scrapewiki(offset, matchlist, matchdict, totalmatches,
+                      startTime)
 
-def scrapewiki(wikiurl, offset, matchlist, matchdict, totalmatches, startTime, monthdict):
-    sys.stdout.write("***scrapewiki***\n")
-    sys.stdout.flush()
+def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     matchesonpage = 0
-    url = "http://en.wikipedia.org/w/index.php?title="+wikiurl+"&offset="+offset+"&limit=500&action=history"
+    url = "http://en.wikipedia.org/w/index.php?title=" + wikiurl + "&offset=" + offset + "&limit=500&action=history"
     page = opener.open(url)
     offset = ""
 
@@ -104,7 +103,7 @@ def scrapewiki(wikiurl, offset, matchlist, matchdict, totalmatches, startTime, m
     for link in soup.find_all("a", class_="mw-changeslist-date"):
         totalmatches += 1
         stime, sday, smonth, syear = map(str, link.string.split(' '))
-        monthlist=["January","February","March","April","May","June","July","August","September","October","November","December"]
+        monthlist = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
         if smonth in monthlist:
             smonth = "%02d" % (monthlist.index(smonth)+1)
         yyyymmdd = str(syear+"-"+smonth+"-"+sday)
@@ -113,76 +112,82 @@ def scrapewiki(wikiurl, offset, matchlist, matchdict, totalmatches, startTime, m
             matchdict[yyyymmdd] += 1
         else:
             matchdict[yyyymmdd] = 1
-        if yyyymm2 in monthdict:
-            monthdict[yyyymm2] += 1
-        else:
-            monthdict[yyyymm2] = 1
 #find offset
     for link in soup.find_all("a", class_="mw-nextlink"):
         offset = link.get('href')
-        offset = re.search('offset=(\d{14})', offset).group(1)        
-        sys.stdout.write("offset: "+offset+"\n")
+        offset = re.search('offset=(\d{14})', offset).group(1)
 #determine if we need to go to next page
     if offset != "":
-        sys.stdout.write("***recursion***\n")
-        return scrapewiki(wikiurl, offset, matchlist, matchdict, totalmatches, startTime, monthdict)
+        return scrapewiki(offset, matchlist, matchdict, totalmatches, startTime)
     else:
-        return dumpresults(wikiurl, matchlist, matchdict, totalmatches, startTime, monthdict)
+        return dumpresults(matchlist, matchdict, totalmatches, startTime)
 
-def dumpresults(wikiurl, matchlist, matchdict, totalmatches, startTime, monthdict):
+def dumpresults(matchlist, matchdict, totalmatches, startTime):
     sortdict = (sorted(matchdict.iteritems(), key=operator.itemgetter(1), reverse=True))
-    maxeditday = max(matchdict.iteritems(), key = operator.itemgetter(1))[0]
+    maxeditday = max(matchdict.iteritems(), key=operator.itemgetter(1))[0]
     timeTotal = datetime.now()-startTime
-    output = "Profiling the "+wikiurl+" page...\nA total of "+str(totalmatches)+" edits have been made to this page\nThe highest number of edits ("+ str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/'+wikiurl+'">'+wikiurl+"</a> page occurred on " + str(maxeditday) + " (dd/mm/yyyy).\n"
+    output = ""
+    output = "Profiling the " + wikiurl + " page...\nA total of " + str(totalmatches) + " edits have been made to this page\nThe highest number of edits (" + str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/' + wikiurl + '">' + wikiurl + "</a> page occurred on " + str(maxeditday) + " (dd/mm/yyyy).\n"
 
     testmonthdict = {}
-#maybe build monthdict here so we don't have to pass it around through recursion:
+#build monthdict:
+#if i can figure out how to find max edit month and determine colors
+#for heat map, I wouldn't need monthdict at all and could go straight
+#from matchdict -> yeardict
     for key in matchdict:
         myear, mmonth, mday = map(int, key.split('-'))
         newkey = str(myear)+"-"+str(mmonth)
         if newkey in testmonthdict:
-            testmonthdict[newkey] += 1
+            testmonthdict[newkey] += matchdict[key]
         else:
-            testmonthdict[newkey] = 1
+            testmonthdict[newkey] = matchdict[key]
 
-    sys.stdout.write("1: "+str(testmonthdict)+"\n")
-    sys.stdout.write("2: "+str(monthdict)+"\n")
+#go straight from matchdict to yeardict, so we can easily drop monthdict
+#in the future
+    yeardict2 = {}
+    for key in matchdict:
+        try:
+            dyear, dmonth, dday = map(int, key.split('-'))
+        except Exception:
+            continue
+        if dmonth not in range(1, 13):
+            break
+        if dyear not in yeardict2:
+            yeardict2[dyear] = [0]*12
+        yeardict2[dyear][dmonth-1] = matchdict[key]
 
 # this turns monthdict into yeardict so we can make nice horizontal tables
     yeardict = {}
-
-#    sys.stdout.write("monthdict: "+str(monthdict)+"\n")
-    for key in monthdict:
+    for key in testmonthdict:
         try:
             dyear, dmonth = map(int, key.split('-'))
         except Exception:
             continue
-        if dmonth not in range(1,13):
+        if dmonth not in range(1, 13):
             break
         if dyear not in yeardict:
             yeardict[dyear] = [0]*12
-        yeardict[dyear][dmonth-1] = monthdict[key]
+        yeardict[dyear][dmonth-1] = testmonthdict[key]
 
     output += 'This code took '+str(timeTotal)+" seconds to execute\n"
-    color = max(monthdict.iteritems(),key=operator.itemgetter(1))[0]
-    color = monthdict[color]
+    color = max(testmonthdict.iteritems(), key=operator.itemgetter(1))[0]
+    color = testmonthdict[color]
     maxeditmonth = color
     color = 255/float(color)
 # turns yeardict into an html table with colors based on activity
-    htmltable = '<table border="1"><tr><td></td><td>Jan</td><td>Feb</td><td>Mar</td><td>Apr</td><td>May</td><td>Jun</td><td>Jul</td><td>Aug</td><td>Sep</td><td>Oct</td><td>Nov</td><td>Dec</td></tr>'    
-    for key in yeardict:
+    htmltable = '<table border="1" style="width:80%; border-collapse:collapse; border-width:0px;"><tr><td></td><td>Jan</td><td>Feb</td><td>Mar</td><td>Apr</td><td>May</td><td>Jun</td><td>Jul</td><td>Aug</td><td>Sep</td><td>Oct</td><td>Nov</td><td>Dec</td></tr>'
+    for key in yeardict2:
         htmltable += '<tr><td>'+str(key)+'</td>'
-        for i in range(0,12):
-            htmltable += '<td style="background-color:rgba(%i,%i,0,1);">%s</td>' % (yeardict[key][i]*color, (maxeditmonth-yeardict[key][i])*color , str(yeardict[key][i]))
+        for i in range(0, 12):
+            if str(yeardict2[key][i]) == 0:
+                color = 0
+            htmltable += '<td style="background-color:rgba(%i,%i,0,1);"><a href="http://en.wikipedia.org/w/index.php?title=%s&offset=%s%s00000000&limit=%s&action=history">%s</a></td>' % (yeardict[key][i]*color, (maxeditmonth-yeardict[key][i])*color, wikiurl, str(key), str(i+1), str(yeardict[key][i]), str(yeardict[key][i]))
         htmltable += '</tr>'
     htmltable += "</table>"
 
     output += htmltable
-#    sys.stdout.write("Output is: " + output+"\n")
-    sys.stdout.write(str(matchdict)+"\n")
-    sys.stdout.flush()
     return flask.Markup(output)
-    
+
 port = int(os.environ.get('PORT', 5000))
 app.debug = True
 app.run(host='0.0.0.0', port=port)
