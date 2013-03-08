@@ -179,9 +179,8 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     for key in yeardict2:
         htmltable += '<tr><td>'+str(key)+'</td>'
         for i in range(0, 12):
-            output += str(yeardict[key][i])
             if yeardict[key][i] == 0:
-                htmltable += '<td style="background-color:rgba(255,255,255,1);">%s</td>' % (str(yeardict[key][i]))
+                htmltable += '<td style="background-color:rgba(230,230,230,1);">%s</td>' % (str(yeardict[key][i]))
             else:
                 htmltable += '<td style="background-color:rgba(%i,%i,0,1);"><a href="http://en.wikipedia.org/w/index.php?title=%s&offset=%s%s00000000&limit=%s&action=history">%s</a></td>' % (yeardict[key][i]*color, (maxeditmonth-yeardict[key][i])*color, wikiurl, str(key), str(i+1), str(yeardict[key][i]), str(yeardict[key][i]))
         htmltable += '</tr>'
