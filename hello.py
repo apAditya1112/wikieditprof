@@ -126,8 +126,11 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     sortdict = (sorted(matchdict.iteritems(), key=operator.itemgetter(1), reverse=True))
     maxeditday = max(matchdict.iteritems(), key=operator.itemgetter(1))[0]
     timeTotal = datetime.now()-startTime
+    datecreated = str(sorted(matchdict)[0])
     output = ""
-    output = "Profiling the " + wikiurl + " page...\nA total of " + str(totalmatches) + " edits have been made to this page\nThe highest number of edits (" + str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/' + wikiurl + '">' + wikiurl + "</a> page occurred on " + str(maxeditday) + " (dd/mm/yyyy).\n"
+    output = "Profiling the " + wikiurl + " page...\nA total of " + str(totalmatches) + " edits have been made to this page since it was created on " + datecreated + "\n"
+    maxeditdaystr = str(maxeditday).replace("-","")
+    output += 'The highest number of edits (' + str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/' + wikiurl + '">' + wikiurl + '</a> page occurred on <a href="http://en.wikipedia.org/w/index.php?title=' + wikiurl + '&offset=' + maxeditdaystr + '000000&limit=' + str(matchdict[maxeditday]) + '&action=history">' + str(maxeditday) + '</a> (dd/mm/yyyy).\n'
 
     testmonthdict = {}
 #build monthdict:
@@ -168,19 +171,18 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
         if dyear not in yeardict:
             yeardict[dyear] = [0]*12
         yeardict[dyear][dmonth-1] = testmonthdict[key]
-
     output += 'This code took '+str(timeTotal)+" seconds to execute\n"
     color = max(testmonthdict.iteritems(), key=operator.itemgetter(1))[0]
     color = testmonthdict[color]
     maxeditmonth = color
     color = 255/float(color)
 # turns yeardict into an html table with colors based on activity
-    htmltable = '<table border="1" style="width:80%; border-collapse:collapse; border-width:0px;"><tr><td></td><td>Jan</td><td>Feb</td><td>Mar</td><td>Apr</td><td>May</td><td>Jun</td><td>Jul</td><td>Aug</td><td>Sep</td><td>Oct</td><td>Nov</td><td>Dec</td></tr>'
+    htmltable = '<table border="1" style="width:100%; border-collapse:collapse; border-width:0px;"><tr><td></td><td>Jan</td><td>Feb</td><td>Mar</td><td>Apr</td><td>May</td><td>Jun</td><td>Jul</td><td>Aug</td><td>Sep</td><td>Oct</td><td>Nov</td><td>Dec</td></tr>'
     for key in yeardict2:
         htmltable += '<tr><td>'+str(key)+'</td>'
         for i in range(0, 12):
             if yeardict[key][i] == 0:
-                htmltable += '<td style="background-color:rgba(230,230,230,1);">%s</td>' % (str(yeardict[key][i]))
+                htmltable += '<td style="background-color:rgba(235,235,235,1);">%s</td>' % (str(yeardict[key][i]))
             else:
                 htmltable += '<td style="background-color:rgba(%i,%i,0,1);"><a href="http://en.wikipedia.org/w/index.php?title=%s&offset=%s%s00000000&limit=%s&action=history">%s</a></td>' % (yeardict[key][i]*color, (maxeditmonth-yeardict[key][i])*color, wikiurl, str(key), str(i+1), str(yeardict[key][i]), str(yeardict[key][i]))
         htmltable += '</tr>'
