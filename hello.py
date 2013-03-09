@@ -7,6 +7,9 @@ import re
 import operator
 import webbrowser
 import sys
+import MySQLdb
+import sqlite3
+from flask import g
 from datetime import datetime
 from bs4 import BeautifulSoup
 
@@ -81,16 +84,14 @@ def prepare(wikiid):
 ##    resp = requests.get(wikiurl)
     global wikiurl
     wikiurl = wikiid
-    wikiurl = wikiurl.replace("%", "%25")
-    wikiurl = wikiurl.replace("'", "%27")
-    wikiurl = wikiurl.replace("&", "%26")
+#not totally sure this works:
+    wikiurl = urllib2.quote(wikiurl)
     startTime = datetime.now()
     offset = ""
     matchlist = ""
     matchdict = {}
     totalmatches = 0
-    return scrapewiki(offset, matchlist, matchdict, totalmatches,
-                      startTime)
+    return scrapewiki(offset, matchlist, matchdict, totalmatches, startTime)
 
 def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     matchesonpage = 0
@@ -99,15 +100,11 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     offset = ""
 
     soup = BeautifulSoup(opener.open(url))
-# populate monthdict and matchdict... maybe it would make sense to make monthdict all at once later on, or go directly from matchdict to html table...
+# populate matchdict
     for link in soup.find_all("a", class_="mw-changeslist-date"):
         totalmatches += 1
         stime, sday, smonth, syear = map(str, link.string.split(' '))
-        monthlist = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-        if smonth in monthlist:
-            smonth = "%02d" % (monthlist.index(smonth)+1)
-        yyyymmdd = str(syear+"-"+smonth+"-"+sday)
-        yyyymm2 = str(syear+"-"+smonth)
+        yyyymmdd = datetime.strptime(syear+"-"+smonth+"-"+sday, '%Y-%B-%d')
         if yyyymmdd in matchdict:
             matchdict[yyyymmdd] += 1
         else:
@@ -126,69 +123,69 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     sortdict = (sorted(matchdict.iteritems(), key=operator.itemgetter(1), reverse=True))
     maxeditday = max(matchdict.iteritems(), key=operator.itemgetter(1))[0]
     timeTotal = datetime.now()-startTime
-    datecreated = str(sorted(matchdict)[0])
+    datecreated = sorted(matchdict)[0]
     output = ""
-    output = "Profiling the " + wikiurl + " page...\nA total of " + str(totalmatches) + " edits have been made to this page since it was created on " + datecreated + "\n"
-    maxeditdaystr = str(maxeditday).replace("-","")
-    output += 'The highest number of edits (' + str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/' + wikiurl + '">' + wikiurl + '</a> page occurred on <a href="http://en.wikipedia.org/w/index.php?title=' + wikiurl + '&offset=' + maxeditdaystr + '000000&limit=' + str(matchdict[maxeditday]) + '&action=history">' + str(maxeditday) + '</a> (dd/mm/yyyy).\n'
+    output += "Profiling the " + wikiurl + " page...\n"
+    output += "A total of " + str(totalmatches) + " edits have been made to this page since it was created on " + datecreated.strftime('%Y/%m/%d') + ".\n"
+    maxeditdaystr = maxeditday.strftime('%Y%-m%d')
+    output += 'The highest number of edits (' + str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/' + wikiurl + '">' + wikiurl + '</a> page occurred on <a href="http://en.wikipedia.org/w/index.php?title=' + wikiurl + '&offset=' + maxeditdaystr + '000000&limit=' + str(matchdict[maxeditday]) + '&action=history">' + maxeditday.strftime('%Y/%m/%d') + '</a>.\n\n'
 
-    testmonthdict = {}
-#build monthdict:
-#if i can figure out how to find max edit month and determine colors
-#for heat map, I wouldn't need monthdict at all and could go straight
-#from matchdict -> yeardict
-    for key in matchdict:
-        myear, mmonth, mday = map(int, key.split('-'))
-        newkey = str(myear)+"-"+str(mmonth)
-        if newkey in testmonthdict:
-            testmonthdict[newkey] += matchdict[key]
-        else:
-            testmonthdict[newkey] = matchdict[key]
-
-#go straight from matchdict to yeardict, so we can easily drop monthdict
-#in the future
-    yeardict2 = {}
-    for key in matchdict:
-        try:
-            dyear, dmonth, dday = map(int, key.split('-'))
-        except Exception:
-            continue
-        if dmonth not in range(1, 13):
-            break
-        if dyear not in yeardict2:
-            yeardict2[dyear] = [0]*12
-        yeardict2[dyear][dmonth-1] = matchdict[key]
-
-# this turns monthdict into yeardict so we can make nice horizontal tables
+#convert matchdict to yeardict
     yeardict = {}
-    for key in testmonthdict:
-        try:
-            dyear, dmonth = map(int, key.split('-'))
-        except Exception:
-            continue
-        if dmonth not in range(1, 13):
-            break
-        if dyear not in yeardict:
-            yeardict[dyear] = [0]*12
-        yeardict[dyear][dmonth-1] = testmonthdict[key]
-    output += 'This code took '+str(timeTotal)+" seconds to execute\n"
-    color = max(testmonthdict.iteritems(), key=operator.itemgetter(1))[0]
-    color = testmonthdict[color]
-    maxeditmonth = color
+    for key in matchdict:
+        if key.year not in yeardict:
+            yeardict[key.year] = [0]*12
+        yeardict[key.year][key.month-1] += matchdict[key]
+        firstyear = min(yeardict)
+        lastyear = max(yeardict)
+        currentyear = firstyear + 1
+        span = lastyear - firstyear + 1
+#plug in blank rows for any years when there were no edits
+        while currentyear < lastyear:
+            if currentyear not in yeardict:
+                yeardict[currentyear] = [0]*12
+            currentyear += 1
+
+#find maximum
+    maxmonth = 0
+    for key in yeardict:
+        for item in yeardict[key]:
+            if item > maxmonth:
+                maxmonth = item
+
+    color = maxmonth
     color = 255/float(color)
+    monthtrunc = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 # turns yeardict into an html table with colors based on activity
-    htmltable = '<table border="1" style="width:100%; border-collapse:collapse; border-width:0px;"><tr><td></td><td>Jan</td><td>Feb</td><td>Mar</td><td>Apr</td><td>May</td><td>Jun</td><td>Jul</td><td>Aug</td><td>Sep</td><td>Oct</td><td>Nov</td><td>Dec</td></tr>'
-    for key in yeardict2:
+#re-add "border=1" if you want the dividers
+    htmltable = '<table style="width:100%; border-collapse:collapse; border-width:0px;"><tr><td></td>'
+    for month in monthtrunc:
+        htmltable += '<td>' + month + '</td>'
+    htmltable += '</tr>'
+    for key in yeardict:
         htmltable += '<tr><td>'+str(key)+'</td>'
         for i in range(0, 12):
             if yeardict[key][i] == 0:
                 htmltable += '<td style="background-color:rgba(235,235,235,1);">%s</td>' % (str(yeardict[key][i]))
             else:
-                htmltable += '<td style="background-color:rgba(%i,%i,0,1);"><a href="http://en.wikipedia.org/w/index.php?title=%s&offset=%s%s00000000&limit=%s&action=history">%s</a></td>' % (yeardict[key][i]*color, (maxeditmonth-yeardict[key][i])*color, wikiurl, str(key), str(i+1), str(yeardict[key][i]), str(yeardict[key][i]))
+                red = yeardict[key][i]*color
+                green = (maxmonth-yeardict[key][i])*color
+                editspermonth = str(yeardict[key][i])
+                year = str(key)
+                month = str(i+1)
+                htmltable += '<td style="background-color:rgba(%i,%i,0,1);"><a href="http://en.wikipedia.org/w/index.php?title=%s&offset=%s%s00000000&limit=%s&action=history">%s</a></td>' % (red, green, wikiurl, year, month, editspermonth, editspermonth)
         htmltable += '</tr>'
     htmltable += "</table>"
 
+#db stuff:
+#    db = MySQLdb.connect("wikieditprof.c1ugskhsviz4.us-west-1.rds.amazonaws.com","mlincol2","SKYamazon","wikieditprof")
+#    cursor = db.cursor()
+#    cursor.execute("SELECT VERSION()")
+#    data = cursor.fetchone()
+#    output += data
+
     output += htmltable
+    output += '\nThis code took '+str(timeTotal)+" seconds to execute\n"
     return flask.Markup(output)
 
 port = int(os.environ.get('PORT', 5000))
