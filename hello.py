@@ -7,8 +7,8 @@ import re
 import operator
 import webbrowser
 import sys
-import MySQLdb
-import sqlite3
+#import MySQLdb
+#import sqlite3
 from flask import g
 from datetime import datetime
 from bs4 import BeautifulSoup
