@@ -1,0 +1,1 @@
+This code crawls Wikipedia edit history and returns a graphical representation of edits over time.
