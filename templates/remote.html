@@ -4,12 +4,6 @@
     Enter a wikiurl to profile:
     <br />
     <br />
-    A wikiurl is the unique portion of a wikipedia URL: everything that appears after "http://en.wikipedia.org/wiki/" e.g. Jimmy_John's.*
-    <br />
-    <br />
-    <img src="http://i.imgur.com/D6VQvuH.png" alt="" title="wikipedia url with portion of interest highlighted" />
-    <br />
-    <br />
     <form action="{{url_for('remote')}}" method="post">
         <input type="text" name="expression" />
         <input type="submit" value="Execute" />
@@ -21,17 +15,26 @@
                 {{ result }}
             </div>
             </pre>
+	    <hr />
         {% endif %}
+    <br />
+    A wikiurl is the unique portion of a wikipedia URL: everything that appears after "http://en.wikipedia.org/wiki/" e.g. Jimmy_John's.*
+    <br />
+    <br />
+    <img src="http://i.imgur.com/D6VQvuH.png" alt="" title="wikipedia url with portion of interest highlighted" />
+    <br />
+    <br />
+    <hr />
     <br />
     <div id="shown_whatsection" style="display:inline">
       <a style="cursor:pointer" onclick="toggle_text('shown_whatsection', 'hidden_whatsection')">
-	what is this? +
+	What is this? +
       </a>
     </div>
     <div id="whatsection">
       <div id="hidden_whatsection" style="display:none">
 	<a style="cursor:pointer" onclick="toggle_text('shown_whatsection', 'hidden_whatsection')">
-	  what is this? -</a>
+	  What is this? -</a>
 <div style="background-color:rgba(100,100,100,0.1); padding:5px;">
 <i>I started this project in order to teach myself a framework (flask) and port some code I had written into a web app which could be shared with others. This site crawls Wikipedia edit histories and returns a visualization of the frequency of edits made to a particular page. The frequency of edits made to a page are color-coded. Red signifies a relatively high number of edits in a month, green signifies a low number of edits, gray signifies either zero edits, a month that has not yet occurred or a month prior to the page's creation. This code was conceived during a project I did in grad school looking at the frequency of edits made to the Wikipedia pages of celebrities after their deaths.
 <br />
