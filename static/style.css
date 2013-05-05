@@ -3,6 +3,10 @@ body{
     color:#3E4349;
 }
 
+.lightgraybox {
+    background-color(100,100,100,0.4);
+}
+
 #nav {
     position: absolute;
     top: 20px;
