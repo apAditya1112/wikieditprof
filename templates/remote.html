@@ -10,6 +10,23 @@
     <img src="http://i.imgur.com/D6VQvuH.png" alt="" title="wikipedia url with portion of interest highlighted" />
     <br />
     <br />
+    <p>
+      this is a test of toggle text
+    </p>
+    <div id="shown_topright" style="display:inline">
+      <a style="cursor:pointer" onclick="toggle_text('shown_topright', 'hidden_topright')">
+	<strong><br>about →</strong>
+      </a>
+    </div>
+    <div id="topright">
+      <div id="hidden_topright" style="display:none">
+	<a style="cursor:pointer" onclick="toggle_text('shown_topright', 'hidden_topright')">
+	  <strong>[X]</strong></a> about
+	<?php include('includes/about.php'); ?>
+      </div>
+    </div>
+    <br />
+    <br />
     <i>*This is the beta version of the code over <a href="http://evening-shelf-5238.herokuapp.com">here</a>. Most inputs make the code barf (any Wikipedia page with ~2000 or more edits will do this). "Jimmy_John's" happened to be a parameter I used for testing which has few enough edits that the code works, but enough edits to show off what the code does. There are a few bugs: the links on each month only sometimes link to the appropriate edits, and the aforementioned crash from pages with high numbers of edits. If you know how to implement background workers in Flask, or see any other glaring flaws in the <a href="https://github.com/mlincoln/wikieditprof/tree/beta">source</a>, <a href="http://mileslincoln.com">get in touch</a>.</i>
     <br />
     <br />
