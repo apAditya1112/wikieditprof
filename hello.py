@@ -95,7 +95,7 @@ def prepare(wikiid):
 
 def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     matchesonpage = 0
-    url = "http://en.wikipedia.org/w/index.php?title=" + wikiurl + "&offset=" + offset + "&limit=500&action=history"
+    url = "http://en.wikipedia.org/w/index.php?title=" + wikiurl + "&offset=" + offset + "&limit=100&action=history"
     page = opener.open(url)
     offset = ""
 
@@ -117,7 +117,7 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     if offset != "":
         sys.stdout.write("\n"+str((datetime.now()-startTime).total_seconds())+"\n")
         sys.stdout.flush()
-        if (datetime.now()-startTime).total_seconds() > 30:
+        if (datetime.now()-startTime).total_seconds() > 27:
             return dumpresults(matchlist, matchdict, totalmatches, startTime)
         else:
             return scrapewiki(offset, matchlist, matchdict, totalmatches, startTime)
