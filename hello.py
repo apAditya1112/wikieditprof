@@ -117,7 +117,7 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     if offset != "":
 #        sys.stdout.write("\n"+str((datetime.now()-startTime).total_seconds())+"\n")
 #        sys.stdout.flush()
-        if (datetime.now()-startTime).total_seconds() > 26:
+        if (datetime.now()-startTime).total_seconds() > 20:
             return dumpresults(matchlist, matchdict, totalmatches, startTime)
         else:
             return scrapewiki(offset, matchlist, matchdict, totalmatches, startTime)

@@ -1,3 +1,7 @@
+background-image: linear-gradient(bottom, rgb(254,133,107) 24%, rgb(35,171,17) 62%);
+background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.24, rgb(254,133,107)), color-stop(0.62, rgb(35,171,17)));
+background-image: -webkit-linear-gradient(bottom, rgb(254,133,107) 24%, rgb(35,171,17) 62%);
+
 body{
     font-family: 'Georgia', serif;
     color:#3E4349;
