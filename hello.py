@@ -190,7 +190,6 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
 #    output += data
 
     output += htmltable
-    output += '<span class="dropt" title="Title for the pop-up">Hot Zone Text<span style="width:500px;">Pop-up text</span></span>'
     output += '\nThis code took '+str(timeTotal)+" seconds to execute\n"
     return flask.Markup(output)
 
