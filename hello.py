@@ -130,8 +130,8 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     timeTotal = datetime.now()-startTime
     datecreated = sorted(matchdict)[0]
     output = ""
-    output += "Profiling the " + wikiurl + " page...\n"
-    output += "A total of " + str(totalmatches) + " edits have been made to this page since it was created on " + datecreated.strftime('%Y/%m/%d') + ".\n"
+#    output += "Profiling the " + wikiurl + " page...\n"
+    output += str(totalmatches) + " edits have been made to this page since it (may or may not have been) created on " + datecreated.strftime('%Y/%m/%d') + ".\n"
     maxeditdaystr = maxeditday.strftime('%Y%-m%d')
     output += 'The highest number of edits (' + str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/' + wikiurl + '">' + wikiurl + '</a> page occurred on <a href="http://en.wikipedia.org/w/index.php?title=' + wikiurl + '&offset=' + maxeditdaystr + '000000&limit=' + str(matchdict[maxeditday]) + '&action=history">' + maxeditday.strftime('%Y/%m/%d') + '</a>.\n\n'
 
