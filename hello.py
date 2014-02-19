@@ -138,7 +138,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
         output += 'This wikipedia page has more edits in its history than can be handled by this app at this time. Shown below is information on the most recent ' + str(numrequests) + ' edits.<br><br>'
 
     output += str(totalmatches) + " edits have been made to this page since "
-    if totalmatces >= numrequests -1:
+    if totalmatches >= numrequests -1:
         output += datecreated.strftime('%Y/%m/%d') + ".<br>"
     else:
         output += "it was created on " + datecreated.strftime('%Y/%m/%d') + ".<br>"
