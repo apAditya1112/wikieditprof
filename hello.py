@@ -95,7 +95,8 @@ def prepare(wikiid):
 
 def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     matchesonpage = 0
-    url = "http://en.wikipedia.org/w/index.php?title=" + wikiurl + "&offset=" + offset + "&limit=1400&action=history"
+    numrequests = 1400
+    url = "http://en.wikipedia.org/w/index.php?title=" + wikiurl + "&offset=" + offset + "&limit=" + numrequests + "&action=history"
     page = opener.open(url)
     offset = ""
 
@@ -132,8 +133,8 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     output = ""
 #    output += "Profiling the " + wikiurl + " page...\n"
     output += " \n"
-    if totalmatches > 1499:
-        output += 'this wikipedia page has more edits in its history than can be handled by this app at this time. shown below is information on the most recent 1400 edits.'
+    if totalmatches > numrequests -1:
+        output += 'this wikipedia page has more edits in its history than can be handled by this app at this time. shown below is information on the most recent' + numrequests + 'edits.'
 
     output += str(totalmatches) + " edits have been made to this page since it (may or may not have been) created on " + datecreated.strftime('%Y/%m/%d') + ".\n"
     maxeditdaystr = maxeditday.strftime('%Y%-m%d')
