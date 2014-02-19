@@ -95,7 +95,7 @@ def prepare(wikiid):
 
 def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     matchesonpage = 0
-    url = "http://en.wikipedia.org/w/index.php?title=" + wikiurl + "&offset=" + offset + "&limit=1300&action=history"
+    url = "http://en.wikipedia.org/w/index.php?title=" + wikiurl + "&offset=" + offset + "&limit=1500&action=history"
     page = opener.open(url)
     offset = ""
 
