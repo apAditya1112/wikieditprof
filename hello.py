@@ -132,6 +132,9 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     output = ""
 #    output += "Profiling the " + wikiurl + " page...\n"
     output += " \n"
+    if totalmatches > 1499:
+        output += 'this wikipedia page has more edits in its history than can be handled by this app at this time. shown below is information on the most recent 1500 edits.'
+
     output += str(totalmatches) + " edits have been made to this page since it (may or may not have been) created on " + datecreated.strftime('%Y/%m/%d') + ".\n"
     maxeditdaystr = maxeditday.strftime('%Y%-m%d')
     output += 'The highest number of edits (' + str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/' + wikiurl + '">' + wikiurl + '</a> page occurred on <a href="http://en.wikipedia.org/w/index.php?title=' + wikiurl + '&offset=' + maxeditdaystr + '000000&limit=' + str(matchdict[maxeditday]) + '&action=history">' + maxeditday.strftime('%Y/%m/%d') + '</a>.\n\n'
