@@ -191,7 +191,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
 #    output += data
 
     output += htmltable
-    output += '\nThis code took '+str(timeTotal)+" <span class="dropt">seconds<span>hidden text</span></span> to execute\n"
+    output += '\nThis code took '+str(timeTotal)+" <span class='dropt'>seconds<span>hidden text</span></span> to execute\n"
     return flask.Markup(output)
 
 port = int(os.environ.get('PORT', 5000))
