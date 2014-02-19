@@ -22,7 +22,7 @@ bitarray==0.8.1
 #blaze==0.2dev
 bokeh==0.3
 boto==2.15.0
-casuarius==1.1
+#casuarius==1.1
 chaco==4.3.0
 colorama==0.2.7
 conda==2.2.1
