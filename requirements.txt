@@ -19,7 +19,7 @@ beautifulsoup4==4.3.1
 binstar==0.3.0
 biopython==1.62
 bitarray==0.8.1
-blaze==0.2dev
+#blaze==0.2dev
 bokeh==0.3
 boto==2.15.0
 casuarius==1.1
