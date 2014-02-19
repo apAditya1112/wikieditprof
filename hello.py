@@ -137,7 +137,11 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     if totalmatches >= numrequests -1:
         output += 'This wikipedia page has more edits in its history than can be handled by this app at this time. Shown below is information on the most recent ' + str(numrequests) + ' edits.<br><br>'
 
-    output += str(totalmatches) + " edits have been made to this page since it (may or may not have been) created on " + datecreated.strftime('%Y/%m/%d') + ".<br>"
+    output += str(totalmatches) + " edits have been made to this page since "
+    if totalmatces >= numrequests -1:
+        output += datecreated.strftime('%Y/%m/%d') + ".<br>"
+    else:
+        output += "it was created on " + datecreated.strftime('%Y/%m/%d') + ".<br>"
     maxeditdaystr = maxeditday.strftime('%Y%-m%d')
     output += 'The highest number of edits (' + str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/' + wikiurl + '">' + wikiurl + '</a> page occurred on <a href="http://en.wikipedia.org/w/index.php?title=' + wikiurl + '&offset=' + maxeditdaystr + '000000&limit=' + str(matchdict[maxeditday]) + '&action=history">' + maxeditday.strftime('%Y/%m/%d') + '</a>.<br><br>'
 
@@ -196,7 +200,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
 #    output += data
 
     output += htmltable
-    output += '<br><br>This code took '+str(timeTotal)+" <span class='dropt'>seconds<span>hidden text</span></span> to execute."
+    output += '<br>This code took '+str(timeTotal)+" <span class='dropt'>seconds<span>hidden text</span></span> to execute."
     output = "<div class='responsestyle'>" + output + "</div>"
     return flask.Markup(output)
 
