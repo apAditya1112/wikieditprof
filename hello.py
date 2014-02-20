@@ -143,7 +143,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     else:
         output += "it was created on " + datecreated.strftime('%Y/%m/%d') + ".<br>"
     maxeditdaystr = maxeditday.strftime('%Y%-m%d')
-    output += 'The highest number of edits (' + str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/' + wikiurl + '">' + wikiurl + '</a> page occurred on <a href="http://en.wikipedia.org/w/index.php?title=' + wikiurl + '&dir=prev&offset=' + str(int(maxeditdaystr)+1) + '000000&limit=' + str(matchdict[maxeditday]) + '&action=history">' + maxeditday.strftime('%Y/%m/%d') + '</a>.<br><br>'
+    output += 'The highest number of edits (' + str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/' + wikiurl + '">' + wikiurl + '</a> page occurred on <a href="http://en.wikipedia.org/w/index.php?title=' + wikiurl + '&offset=' + str(int(maxeditdaystr)+1) + '000000&limit=' + str(matchdict[maxeditday]) + '&action=history">' + maxeditday.strftime('%Y/%m/%d') + '</a>.<br><br>'
 
 #convert matchdict to yeardict
     yeardict = {}
@@ -188,6 +188,8 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
                 editspermonth = str(yeardict[key][i])
                 year = str(key)
                 month = str(i+1)
+                if len(month) == 1:
+                    month = "0" + month
                 htmltable += '<td id="cells" style="background-color:rgba(%i,%i,0,1);"><a href="http://en.wikipedia.org/w/index.php?title=%s&dir=prev&offset=%s%s00000000&limit=%s&action=history">%s</a></td>' % (red, green, wikiurl, year, month, editspermonth, editspermonth)
         htmltable += '</tr>'
     htmltable += "</table>"
@@ -200,7 +202,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
 #    output += data
 
     output += htmltable
-    output += '<br>This code took '+str(timeTotal)+" <span class='dropt'>seconds<span>hidden text</span></span> to execute."
+    output += '<br>This code took '+str(timeTotal)+" seconds to execute."
     output = "<div class='responsestyle'>" + output + "</div>"
     return flask.Markup(output)
 
