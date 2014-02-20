@@ -142,7 +142,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
         output += datecreated.strftime('%Y/%m/%d') + ".<br>"
     else:
         output += "it was created on " + datecreated.strftime('%Y/%m/%d') + ".<br>"
-    maxeditdaystr = maxeditday.strftime('%Y%-m%d')
+    maxeditdaystr = maxeditday.strftime('%Y%m%d')
     output += 'The highest number of edits (' + str(matchdict[maxeditday]) + ') to the <a href="http://en.wikipedia.org/wiki/' + wikiurl + '">' + wikiurl + '</a> page occurred on <a href="http://en.wikipedia.org/w/index.php?title=' + wikiurl + '&offset=' + str(int(maxeditdaystr)+1) + '000000&limit=' + str(matchdict[maxeditday]) + '&action=history">' + maxeditday.strftime('%Y/%m/%d') + '</a>.<br><br>'
 
 #convert matchdict to yeardict
