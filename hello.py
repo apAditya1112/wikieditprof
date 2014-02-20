@@ -188,7 +188,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
                 editspermonth = str(yeardict[key][i])
                 year = str(key)
                 month = str(i+1)
-                htmltable += '<td id="cells" style="background-color:rgba(%i,%i,0,1);"><a href="http://en.wikipedia.org/w/index.php?title=%s&offset=%s%s00000000&limit=%s&action=history">%s</a></td>' % (red, green, wikiurl, year, month, editspermonth, editspermonth)
+                htmltable += '<td id="cells" style="background-color:rgba(%i,%i,0,1);"><a href="http://en.wikipedia.org/w/index.php?title=%s&dir=prev&offset=%s%s00000000&limit=%s&action=history">%s</a></td>' % (red, green, wikiurl, year, month, editspermonth, editspermonth)
         htmltable += '</tr>'
     htmltable += "</table>"
 
