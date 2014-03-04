@@ -124,7 +124,7 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
         else:
             return scrapewiki(offset, matchlist, matchdict, totalmatches, startTime)
     if totalmatches == 0:
-        return flask.Markup("That does not appear to be an extant Wikipedia page. PLease try again.")
+        return flask.Markup("That does not appear to be an extant Wikipedia page. Please try again.")
     else:
         return dumpresults(matchlist, matchdict, totalmatches, startTime)
 
