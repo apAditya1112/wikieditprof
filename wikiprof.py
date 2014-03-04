@@ -96,7 +96,7 @@ def prepare(wikiid):
 def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     matchesonpage = 0
     global numrequests
-    numrequests = 1300
+    numrequests = 1200
     url = "http://en.wikipedia.org/w/index.php?title=" + wikiurl + "&offset=" + offset + "&limit=" + str(numrequests) + "&action=history"
     page = opener.open(url)
     offset = ""
@@ -124,7 +124,7 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
         else:
             return scrapewiki(offset, matchlist, matchdict, totalmatches, startTime)
     if totalmatches == 0:
-        return flask.Markup("error")
+        return flask.Markup("That does not appear to be an extant Wikipedia page.")
     else:
         return dumpresults(matchlist, matchdict, totalmatches, startTime)
 
