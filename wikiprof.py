@@ -123,6 +123,8 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
             return dumpresults(matchlist, matchdict, totalmatches, startTime)
         else:
             return scrapewiki(offset, matchlist, matchdict, totalmatches, startTime)
+    if totalmatches == 0:
+        return flask.Markup("error")
     else:
         return dumpresults(matchlist, matchdict, totalmatches, startTime)
 
