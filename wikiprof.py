@@ -2,7 +2,6 @@ import flask
 import flask.views
 import os
 import functools
-import urllib2
 import re
 import operator
 import webbrowser
@@ -14,8 +13,6 @@ from flask import g
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-opener = urllib2.build_opener()
-opener.addheaders = [('User-agent', 'Mozilla/5.0')]
 app = flask.Flask(__name__)
 app.secret_key = "bacon"
 
@@ -98,12 +95,10 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     global numrequests
     numrequests = 1200
     url = "http://en.wikipedia.org/w/index.php?title=" + wikiurl + "&offset=" + offset + "&limit=" + str(numrequests) + "&action=history"
-#    page = requests.get(url)
-    page = opener.open(url)
+    page = requests.get(url)
     offset = ""
 
-    soup = BeautifulSoup(page)
-#    soup = BeautifulSoup(page.text)
+    soup = BeautifulSoup(page.text)
 # populate matchdict
     for link in soup.find_all("a", class_="mw-changeslist-date"):
         totalmatches += 1
@@ -199,7 +194,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     htmltable += "</table>"
 
     output += htmltable
-    output += '<br>This code took '+str(timeTotal)+" seconds to execute."
+    output += '<br>These results took '+str(timeTotal)+" seconds to execute."
     output = "<div class='responsestyle'>" + output + "</div>"
     return flask.Markup(output)
 
