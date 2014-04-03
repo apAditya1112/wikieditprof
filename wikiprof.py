@@ -134,7 +134,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
 #    output += "Profiling the " + wikiurl + " page...\n"
     output += "<br>"
     if totalmatches >= numrequests -1:
-        output += 'This wikipedia page has more edits in its history than can be handled by this app at this time. Shown below is information on the most recent ' + str(numrequests) + ' edits.<br><br>'
+        output += 'This wikipedia page has more edits in its history than can be handled by this app at this time. Shown below is information on the most recent ' + str(totalmatches) + ' edits.<br><br>'
 
     output += str(totalmatches) + " edits have been made to this page since "
     if totalmatches >= numrequests -1:
