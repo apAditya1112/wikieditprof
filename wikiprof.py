@@ -115,7 +115,7 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
 #determine if we need to go to next page
     if offset != "":
 #        sys.stdout.write("\n"+str((datetime.now()-startTime).total_seconds())+"\n")
-        if (datetime.now()-startTime).total_seconds() > 26:
+        if (datetime.now()-startTime).total_seconds() > 25:
             return dumpresults(matchlist, matchdict, totalmatches, startTime)
         else:
             return scrapewiki(offset, matchlist, matchdict, totalmatches, startTime)
@@ -133,7 +133,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
 #    output += "Profiling the " + wikiurl + " page...\n"
     output += "<br>"
 #figure out how to make this work more smarter
-    if totalmatches % numrequests <= 0 or 199:
+    if totalmatches % numrequests == 0 or 199:
         output += 'This wikipedia page has more edits in its history than can be handled by this app at this time. Shown below is information on the most recent ' + str(totalmatches) + ' edits.<br><br>'
 
     output += str(totalmatches) + " edits have been made to this page since "
