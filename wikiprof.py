@@ -169,7 +169,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
 
     color = maxmonth
     color = 255/float(color)
-    monthtrunc = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Yr Total"]
+    monthtrunc = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Total"]
 # turns yeardict into an html table with colors based on activity
 #re-add "border=1" if you want the dividers
     htmltable = '<table style="width:100%; border-collapse:collapse; border-width:0px;"><tr><td></td>'
