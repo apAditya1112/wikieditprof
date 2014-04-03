@@ -82,7 +82,7 @@ def prepare(wikiid):
     global wikiurl
     wikiurl = wikiid
 #not totally sure this works:
-    wikiurl = urllib2.quote(wikiurl)
+#    wikiurl = urllib2.quote(wikiurl)
     startTime = datetime.now()
     offset = ""
     matchlist = ""
