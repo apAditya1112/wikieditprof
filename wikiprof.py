@@ -133,6 +133,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     output = ""
 #    output += "Profiling the " + wikiurl + " page...\n"
     output += "<br>"
+#figure out how to make this work
     if totalmatches >= numrequests -1:
         output += 'This wikipedia page has more edits in its history than can be handled by this app at this time. Shown below is information on the most recent ' + str(totalmatches) + ' edits.<br><br>'
 
@@ -169,7 +170,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
 
     color = maxmonth
     color = 255/float(color)
-    monthtrunc = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    monthtrunc = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Total"]
 # turns yeardict into an html table with colors based on activity
 #re-add "border=1" if you want the dividers
     htmltable = '<table style="width:100%; border-collapse:collapse; border-width:0px;"><tr><td></td>'
