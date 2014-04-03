@@ -7,6 +7,7 @@ import re
 import operator
 import webbrowser
 import sys
+import requests
 #import MySQLdb
 #import sqlite3
 from flask import g
@@ -19,7 +20,6 @@ app = flask.Flask(__name__)
 app.secret_key = "bacon"
 
 #redis/background job stuff commented out for now
-#import requests
 #from rq import Queue
 #from worker import conn
 
@@ -98,10 +98,12 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     global numrequests
     numrequests = 1200
     url = "http://en.wikipedia.org/w/index.php?title=" + wikiurl + "&offset=" + offset + "&limit=" + str(numrequests) + "&action=history"
-    page = opener.open(url)
+    page = requests.get(url)
+#    page = opener.open(url)
     offset = ""
 
-    soup = BeautifulSoup(opener.open(url))
+#    soup = BeautifulSoup(page)
+    soup = BeautifulSoup(page.text)
 # populate matchdict
     for link in soup.find_all("a", class_="mw-changeslist-date"):
         totalmatches += 1
@@ -195,13 +197,6 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
                 htmltable += '<td id="cells" style="background-color:rgba(%i,%i,0,1);"><a href="http://en.wikipedia.org/w/index.php?title=%s&dir=prev&offset=%s%s00000000&limit=%s&action=history">%s</a></td>' % (red, green, wikiurl, year, month, editspermonth, editspermonth)
         htmltable += '</tr>'
     htmltable += "</table>"
-
-#db stuff:
-#    db = MySQLdb.connect("wikieditprof.c1ugskhsviz4.us-west-1.rds.amazonaws.com","mlincol2","SKYamazon","wikieditprof")
-#    cursor = db.cursor()
-#    cursor.execute("SELECT VERSION()")
-#    data = cursor.fetchone()
-#    output += data
 
     output += htmltable
     output += '<br>This code took '+str(timeTotal)+" seconds to execute."
