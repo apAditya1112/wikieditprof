@@ -115,7 +115,6 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
 #determine if we need to go to next page
     if offset != "":
 #        sys.stdout.write("\n"+str((datetime.now()-startTime).total_seconds())+"\n")
-#        sys.stdout.flush()
         if (datetime.now()-startTime).total_seconds() > 26:
             return dumpresults(matchlist, matchdict, totalmatches, startTime)
         else:
@@ -133,8 +132,8 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     output = ""
 #    output += "Profiling the " + wikiurl + " page...\n"
     output += "<br>"
-#figure out how to make this work
-    if totalmatches >= numrequests -1:
+#figure out how to make this work more smarter
+    if totalmatches % numrequests == 0:
         output += 'This wikipedia page has more edits in its history than can be handled by this app at this time. Shown below is information on the most recent ' + str(totalmatches) + ' edits.<br><br>'
 
     output += str(totalmatches) + " edits have been made to this page since "
@@ -170,7 +169,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
 
     color = maxmonth
     color = 255/float(color)
-    monthtrunc = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Total"]
+    monthtrunc = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Yr Total"]
 # turns yeardict into an html table with colors based on activity
 #re-add "border=1" if you want the dividers
     htmltable = '<table style="width:100%; border-collapse:collapse; border-width:0px;"><tr><td></td>'
@@ -179,19 +178,23 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     htmltable += '</tr>'
     for key in yeardict:
         htmltable += '<tr><td>'+str(key)+'</td>'
+        yeartotal = 0
         for i in range(0, 12):
+            if i == 13:
+                htmltable += '<td style="background-color:rgba(235,235,235,1);">%s</td>' % str(yeartotal)
             if yeardict[key][i] == 0:
                 htmltable += '<td style="background-color:rgba(235,235,235,1);">%s</td>' % (str(yeardict[key][i]))
             else:
                 red = yeardict[key][i]*color
                 green = (maxmonth-yeardict[key][i])*color
                 editspermonth = str(yeardict[key][i])
+                yeartotal += yeardict[key][i]
                 year = str(key)
                 month = str(i+1)
                 if len(month) == 1:
                     month = "0" + month
                 htmltable += '<td id="cells" style="background-color:rgba(%i,%i,0,1);"><a href="http://en.wikipedia.org/w/index.php?title=%s&dir=prev&offset=%s%s00000000&limit=%s&action=history">%s</a></td>' % (red, green, wikiurl, year, month, editspermonth, editspermonth)
-        htmltable += '</tr>'
+        htmltable += '<td style="text-align: center;">' + str(yeartotal) + '</td></tr>'
     htmltable += "</table>"
 
     output += htmltable
