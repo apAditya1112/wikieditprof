@@ -93,7 +93,7 @@ def prepare(wikiid):
 def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     matchesonpage = 0
     global numrequests
-    numrequests = 100
+    numrequests = 200
     url = "http://en.wikipedia.org/w/index.php?title=" + wikiurl + "&offset=" + offset + "&limit=" + str(numrequests) + "&action=history"
     page = requests.get(url)
     offset = ""
