@@ -102,12 +102,22 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
 # populate matchdict
     for link in soup.find_all("a", class_="mw-changeslist-date"):
         totalmatches += 1
+        print link.string
         stime, sday, smonth, syear = map(str, link.string.split(' '))
         yyyymmdd = datetime.strptime(syear+"-"+smonth+"-"+sday, '%Y-%B-%d')
         if yyyymmdd in matchdict:
             matchdict[yyyymmdd] += 1
+            for span in soup.find_all("span", class_="mw-plusminus-neg"):
+#                print span.string
+                sys.stdout.write(span.string)
+#            matchdict[yyyymmddsize] += pagedelta
         else:
             matchdict[yyyymmdd] = 1
+#experimental: track change in page size
+#    for span in soup.find_all("span", {"class" : re.compile('mw-plusminus-.*')}):
+#        sys.stdout.write(span.string)
+
+
 #find offset
     for link in soup.find_all("a", class_="mw-nextlink"):
         offset = link.get('href')
@@ -193,7 +203,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
                 month = str(i+1)
                 if len(month) == 1:
                     month = "0" + month
-                htmltable += '<td id="cells" style="background-color:rgba(%i,%i,0,1);"><a href="http://en.wikipedia.org/w/index.php?title=%s&dir=prev&offset=%s%s00000000&limit=%s&action=history">%s</a></td>' % (red, green, wikiurl, year, month, editspermonth, editspermonth)
+                htmltable += '<td id="cells" style="background-color:rgba(%i,%i,0,1);"><a href="http://en.wikipedia.org/w/index.php?title=%s&dir=prev&offset=%s%s00000000&limit=%s&action=history" target="_blank">%s</a></td>' % (red, green, wikiurl, year, month, editspermonth, editspermonth)
         htmltable += '<td style="text-align: center;">' + str(yeartotal) + '</td></tr>'
     htmltable += "</table>"
 
