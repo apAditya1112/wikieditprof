@@ -93,7 +93,7 @@ def prepare(wikiid):
 def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     matchesonpage = 0
     global numrequests
-    numrequests = 50
+    numrequests = 100
     url = "http://en.wikipedia.org/w/index.php?title=" + wikiurl + "&offset=" + offset + "&limit=" + str(numrequests) + "&action=history"
     page = requests.get(url)
     offset = ""
@@ -208,8 +208,8 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     htmltable += "</table>"
 
     output += htmltable
-    totalSeconds = str(timeTotal).strftime('%S')
-    output += '<br>These results took '+str(totalSeconds)+" seconds to execute."
+#    totalSeconds = str(timeTotal).strftime('%S')
+    output += '<br>These results took '+str(timeTotal)+" seconds to execute."
     output = "<div class='responsestyle'>" + output + "</div>"
     return flask.Markup(output)
 
