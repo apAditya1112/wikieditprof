@@ -125,7 +125,7 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
 #determine if we need to go to next page
     if offset != "":
 #        sys.stdout.write("\n"+str((datetime.now()-startTime).total_seconds())+"\n")
-        if (datetime.now()-startTime).total_seconds() > 25:
+        if (datetime.now()-startTime).total_seconds() > 24:
             return dumpresults(matchlist, matchdict, totalmatches, startTime)
         else:
             return scrapewiki(offset, matchlist, matchdict, totalmatches, startTime)
