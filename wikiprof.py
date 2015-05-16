@@ -208,7 +208,7 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     htmltable += "</table>"
 
     output += htmltable
-    totalSeconds = timeTotal.strftime('%S')
+    totalSeconds = str(timeTotal).strftime('%S')
     output += '<br>These results took '+str(totalSeconds)+" seconds to execute."
     output = "<div class='responsestyle'>" + output + "</div>"
     return flask.Markup(output)
