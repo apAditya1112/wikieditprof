@@ -7,8 +7,7 @@ import re
 import operator
 import webbrowser
 import sys
-#import MySQLdb
-#import sqlite3
+#import pytrends
 from flask import g
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -28,43 +27,13 @@ app.secret_key = "bacon"
 #users = {'user':'pass'}
 
 class Main(flask.views.MethodView):
-
     def get(self):
         return flask.render_template('remote.html')
-
-#     def post(self):
-#         if 'logout' in flask.request.form:
-#             flask.session.pop('username', None)
-#             return flask.redirect(flask.url_for('index'))
-#         required = ['username', 'passwd']
-#         for r in required:
-#             if r not in flask.request.form:
-#                 flask.flash("Error: {0} is required.".format(r))
-#                 return flask.redirect(flask.url_for('index'))
-#         username = flask.request.form['username']
-#         passwd = flask.request.form['passwd']
-#         if username in users and users[username] == passwd:
-#             flask.session['username'] = username
-#         else:
-#             flask.flash("Username doesn't exist or incorrect password")
-#         return flask.redirect(flask.url_for('index'))
-
-# def login_required(method):
-#     @functools.wraps(method)
-#     def wrapper(*args, **kwargs):
-#         if 'username' in flask.session:
-#             return method(*args, **kwargs)
-#         else:
-#             flask.flash("A login is required to see the page!")
-#             return flask.redirect(flask.url_for('index'))
-#     return wrapper
 
 class Remote(flask.views.MethodView):
-#     @login_required
     def get(self):
         return flask.render_template('remote.html')
 
-#     @login_required
     def post(self):
         input = flask.request.form['expression']
 ##        result = q.enqueue(prepare, input)
@@ -84,7 +53,9 @@ def prepare(wikiid):
 ##    resp = requests.get(wikiurl)
     global wikiurl
     wikiurl = wikiid
-#not totally sure this works:
+#trim full wikipedia url down
+    wikiurl = wikiurl.replace("https://en.wikipedia.org/wiki/","")
+#clean up weird punctuation?
     wikiurl = urllib2.quote(wikiurl)
     startTime = datetime.now()
     offset = ""
@@ -101,7 +72,7 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
     page = opener.open(url)
     offset = ""
 
-    soup = BeautifulSoup(opener.open(url))
+    soup = BeautifulSoup(opener.open(url),"html.parser")
 # populate matchdict
     for link in soup.find_all("a", class_="mw-changeslist-date"):
         totalmatches += 1
@@ -117,8 +88,6 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
         offset = re.search('offset=(\d{14})', offset).group(1)
 #determine if we need to go to next page
     if offset != "":
-#        sys.stdout.write("\n"+str((datetime.now()-startTime).total_seconds())+"\n")
-#        sys.stdout.flush()
         if (datetime.now()-startTime).total_seconds() > 18:
             return dumpresults(matchlist, matchdict, totalmatches, startTime)
         else:
@@ -128,11 +97,12 @@ def scrapewiki(offset, matchlist, matchdict, totalmatches, startTime):
 
 def dumpresults(matchlist, matchdict, totalmatches, startTime):
     sortdict = (sorted(matchdict.iteritems(), key=operator.itemgetter(1), reverse=True))
+    if not matchdict:
+        return flask.Markup("<br>Uh oh! That doesn't appear to be a Wikipedia URL. Please try again. <br><br>Your query should look something like https://en.wikipedia.org/wiki/Vladimir_Nabokov")
     maxeditday = max(matchdict.iteritems(), key=operator.itemgetter(1))[0]
     timeTotal = datetime.now()-startTime
     datecreated = sorted(matchdict)[0]
     output = ""
-#    output += "Profiling the " + wikiurl + " page...\n"
     output += "<br>"
     if totalmatches >= numrequests -1:
         output += 'This wikipedia page has more edits in its history than can be handled by this app at this time. Shown below is information on the most recent ' + str(numrequests) + ' edits.<br><br>'
@@ -172,7 +142,8 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
     color = 255/float(color)
     monthtrunc = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 # turns yeardict into an html table with colors based on activity
-#re-add "border=1" if you want the dividers
+#    sys.stdout.write(str(yeardict))
+#    sys.stdout.flush()
     htmltable = '<table style="width:100%; border-collapse:collapse; border-width:0px;"><tr><td></td>'
     for month in monthtrunc:
         htmltable += '<td>' + month + '</td>'
@@ -193,13 +164,6 @@ def dumpresults(matchlist, matchdict, totalmatches, startTime):
                 htmltable += '<td id="cells" style="background-color:rgba(%i,%i,0,1);"><a href="http://en.wikipedia.org/w/index.php?title=%s&dir=prev&offset=%s%s00000000&limit=%s&action=history">%s</a></td>' % (red, green, wikiurl, year, month, editspermonth, editspermonth)
         htmltable += '</tr>'
     htmltable += "</table>"
-
-#db stuff:
-#    db = MySQLdb.connect("wikieditprof.c1ugskhsviz4.us-west-1.rds.amazonaws.com","mlincol2","SKYamazon","wikieditprof")
-#    cursor = db.cursor()
-#    cursor.execute("SELECT VERSION()")
-#    data = cursor.fetchone()
-#    output += data
 
     output += htmltable
     output += '<br>This code took '+str(timeTotal)+" seconds to execute."

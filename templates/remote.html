@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block body %}
     <h2>Wikipedia Edit Profiler <span style="color:red;">BETA</span></h2>
-    Enter a wikiurl to profile:
+    Enter the URL of a Wikipedia page you would like to profile:
     <br />
     <br />
     <form action="{{url_for('remote')}}" method="post">
@@ -18,13 +18,6 @@
 	    <hr />
         {% endif %}
     <br />
-    A wikiurl is the unique portion of a wikipedia URL: everything that appears after "http://en.wikipedia.org/wiki/" e.g. Vladimir_Nabokov.
-    <br />
-    <br />
-    <img src="http://i.imgur.com/IYVbkbd.png" alt="" title="wikipedia url with portion of interest highlighted" />
-    <br />
-    <br />
-    <hr />
     <br />
     <div id="shown_whatsection" style="display:inline">
       <a style="cursor:pointer" onclick="toggle_text('shown_whatsection', 'hidden_whatsection')">
@@ -36,7 +29,7 @@
 	<a style="cursor:pointer" onclick="toggle_text('shown_whatsection', 'hidden_whatsection')">
 	  What is this? -</a>
 <div style="background-color:rgba(100,100,100,0.1); padding:5px;">
-<i>I started this project in order to teach myself a framework (flask) and port some code I had written into a web app which could be shared with others. This site crawls Wikipedia edit histories and returns a visualization of the frequency of edits made to a particular page. The frequency of edits made to a page are color-coded. Red signifies a relatively high number of edits in a month, green signifies a low number of edits, gray signifies either zero edits, a month that has not yet occurred or a month prior to the page's creation. This code was conceived during a project I did in grad school looking at the frequency of edits made to the Wikipedia pages of celebrities after their deaths.
+<i>This site crawls Wikipedia page edit histories and returns a visualization of the frequency of edits made to a particular page. The frequency of edits made to a page are color-coded. Red signifies a relatively high number of edits in a month, green signifies a low number of edits, gray signifies either zero edits, a month that has not yet occurred or a month prior to the page's creation.
 <br />
 <br />
 What's with the favicon? The Wikipedia favicon rotated 90 degrees looks like a sigma. Sigma is the summation operator. This code summarizes wikipedia edit data.
@@ -55,7 +48,7 @@ What's with the favicon? The Wikipedia favicon rotated 90 degrees looks like a s
 	<a style="cursor:pointer" onclick="toggle_text('shown_aboutsection', 'hidden_aboutsection')">
 	  More info -</a>
 <div style="background-color:rgba(100,100,100,0.1); padding:5px;">
-<i>Because the code depends on http requests, which time out in 30 seconds, it is currently only capable of grabbing the most recent ~1300 edits. If you query a page with a higher number of edits, your results will display only the most recent edits.
+<i>Because the code depends on http requests, which time out in 30 seconds, it is currently only capable of grabbing the most recent few hundred edits. If you query a page with a higher number of edits, your results will display only the most recent activity.
   <br />
   <br />
  Bugs: This code is extremely slow. If you know how to implement background workers in Flask, or see any other glaring flaws in the <a href="https://github.com/mlincoln/wikieditprof/tree/beta">source</a>, <a href="http://mileslincoln.com">get in touch</a>.</i>
